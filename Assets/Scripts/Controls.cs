@@ -80,6 +80,15 @@ public partial class @Controls : IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""ctrl"",
+                    ""type"": ""Button"",
+                    ""id"": ""099862e2-aecd-4b26-81ae-f16398843663"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -214,6 +223,17 @@ public partial class @Controls : IInputActionCollection2, IDisposable
                     ""action"": ""zoom"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""bc421598-e040-45d4-baf9-c5ef80dcc9b4"",
+                    ""path"": ""<Keyboard>/ctrl"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""ctrl"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -228,6 +248,7 @@ public partial class @Controls : IInputActionCollection2, IDisposable
         m_player_cursor = m_player.FindAction("cursor", throwIfNotFound: true);
         m_player_move = m_player.FindAction("move", throwIfNotFound: true);
         m_player_zoom = m_player.FindAction("zoom", throwIfNotFound: true);
+        m_player_ctrl = m_player.FindAction("ctrl", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -293,6 +314,7 @@ public partial class @Controls : IInputActionCollection2, IDisposable
     private readonly InputAction m_player_cursor;
     private readonly InputAction m_player_move;
     private readonly InputAction m_player_zoom;
+    private readonly InputAction m_player_ctrl;
     public struct PlayerActions
     {
         private @Controls m_Wrapper;
@@ -303,6 +325,7 @@ public partial class @Controls : IInputActionCollection2, IDisposable
         public InputAction @cursor => m_Wrapper.m_player_cursor;
         public InputAction @move => m_Wrapper.m_player_move;
         public InputAction @zoom => m_Wrapper.m_player_zoom;
+        public InputAction @ctrl => m_Wrapper.m_player_ctrl;
         public InputActionMap Get() { return m_Wrapper.m_player; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -330,6 +353,9 @@ public partial class @Controls : IInputActionCollection2, IDisposable
                 @zoom.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnZoom;
                 @zoom.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnZoom;
                 @zoom.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnZoom;
+                @ctrl.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnCtrl;
+                @ctrl.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnCtrl;
+                @ctrl.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnCtrl;
             }
             m_Wrapper.m_PlayerActionsCallbackInterface = instance;
             if (instance != null)
@@ -352,6 +378,9 @@ public partial class @Controls : IInputActionCollection2, IDisposable
                 @zoom.started += instance.OnZoom;
                 @zoom.performed += instance.OnZoom;
                 @zoom.canceled += instance.OnZoom;
+                @ctrl.started += instance.OnCtrl;
+                @ctrl.performed += instance.OnCtrl;
+                @ctrl.canceled += instance.OnCtrl;
             }
         }
     }
@@ -364,5 +393,6 @@ public partial class @Controls : IInputActionCollection2, IDisposable
         void OnCursor(InputAction.CallbackContext context);
         void OnMove(InputAction.CallbackContext context);
         void OnZoom(InputAction.CallbackContext context);
+        void OnCtrl(InputAction.CallbackContext context);
     }
 }

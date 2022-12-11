@@ -23,7 +23,6 @@ public class SelectionManager
 
     public HashSet<Selectable> Selected = new HashSet<Selectable>();
     public HashSet<Selectable> Hovered = new HashSet<Selectable>();
-    public List<Selectable> Available = new List<Selectable>();
     
     private int _selection_index = 0;
 
@@ -62,6 +61,16 @@ public class SelectionManager
     {
         toDeselect.OnDeselect();
         Selected.Remove(toDeselect);
+    }
+    public void Hover(Selectable toHover)
+    {
+        toHover.OnHover();
+        Hovered.Add(toHover);
+    }
+    public void Unhover(Selectable toUnhover)
+    {
+        toUnhover.OnUnhover();
+        Hovered.Remove(toUnhover);
     }
 
     public void DeselectAll()

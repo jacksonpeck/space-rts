@@ -123,6 +123,13 @@ public class PlayerInput : MonoBehaviour
         }
     }
 
+    private void CtrlDown(InputAction.CallbackContext context)
+    {
+    }
+    private void CtrlUp(InputAction.CallbackContext context)
+    {
+    }
+
     private void OnEnable()
     {
         _controls.Enable();

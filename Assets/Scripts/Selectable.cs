@@ -4,33 +4,43 @@ using UnityEngine;
 
 public class Selectable : MonoBehaviour
 {
+    public List<SelectableNode> Nodes;
+
+    [SerializeField] private SpriteRenderer _renderer;
     [SerializeField] private Color _colorHover;
     [SerializeField] private Color _colorSelect;
     
     public Vector2 Destination;
     public Vector2 Direction;
 
-    private SpriteRenderer _renderer;
-    public bool _hovered = false;
-    public bool _selected = false;
+    public bool isHovered {get; private set;} = false;
+    public bool isSelected {get; private set;} = false;
 
     private void Awake()
     {
-        _renderer = GetComponent<SpriteRenderer>();
-
         Destination = this.transform.position;
+        Direction = this.transform.up;
     }
 
     public void OnSelect()
     {
-        _selected = true;
+        isSelected = true;
         _renderer.enabled = true;
         _renderer.color = _colorSelect;
+        if (Nodes.Count != 0)
+        {
+            RemoveDeadNodes();
+            foreach (SelectableNode node in Nodes)
+            {
+                node.OnSelect();
+            }
+            
+        }
     }
     public void OnDeselect()
     {
-        _selected = false;
-        if (_hovered)
+        isSelected = false;
+        if (isHovered)
         {
             _renderer.color = _colorHover;
         }
@@ -38,44 +48,91 @@ public class Selectable : MonoBehaviour
         {
             _renderer.enabled = false;
         }
+        if (Nodes.Count != 0)
+        {
+            RemoveDeadNodes();
+            foreach (SelectableNode node in Nodes)
+            {
+                node.OnDeselect();
+            }
+            
+        }
+    }
+
+    public void OnHover()
+    {
+        isHovered = true;
+        _renderer.enabled = true;
+        _renderer.color = _colorHover;
+        if (Nodes.Count != 0)
+        {
+            RemoveDeadNodes();
+            foreach (SelectableNode node in Nodes)
+            {
+                node.OnHover();
+            }
+            
+        }
+    }
+    public void OnUnhover()
+    {
+        isHovered = false;
+        if (isSelected)
+        {
+            _renderer.enabled = true;
+            _renderer.color = _colorSelect;
+        }
+        else
+        {
+            _renderer.enabled = false;
+        }
+        if (Nodes.Count != 0)
+        {
+            RemoveDeadNodes();
+            foreach (SelectableNode node in Nodes)
+            {
+                node.OnUnhover();
+            }
+            
+        }
     }
     
     private void OnTriggerEnter2D(Collider2D other)
     {
         if (other.tag == "SelectionBox")
         {
-            _hovered = true;
-            _renderer.enabled = true;
-            _renderer.color = _colorHover;
-            SelectionManager.Instance.Hovered.Add(this);
+            SelectionManager.Instance.Hover(this);
         }
     }
     private void OnTriggerExit2D(Collider2D other)
     {
         if (other.tag == "SelectionBox")
         {
-            _hovered = false;
-            SelectionManager.Instance.Hovered.Remove(this);
-            if (_selected)
-            {
-                _renderer.enabled = true;
-                _renderer.color = _colorSelect;
-            }
-            else
-            {
-                _renderer.enabled = false;
-            }
+            SelectionManager.Instance.Unhover(this);
         }
     }
 
-    private void OnEnable()
+    private void RemoveDeadNodes()
     {
-        SelectionManager.Instance.Available.Add(this);
+        List<SelectableNode> deadNodes = new List<SelectableNode>();
+
+        foreach (SelectableNode node in Nodes)
+        {
+            if (node == null)
+            {
+                deadNodes.Add(node);
+            }
+        }
+
+        foreach (SelectableNode node in deadNodes)
+        {
+            Nodes.Remove(node);
+        }
     }
+
     private void OnDisable()
     {
-        if (_selected) SelectionManager.Instance.Selected.Remove(this);
-        if (_hovered) SelectionManager.Instance.Hovered.Remove(this);
-        SelectionManager.Instance.Available.Remove(this);
+        if (isSelected) SelectionManager.Instance.Selected.Remove(this);
+        if (isHovered) SelectionManager.Instance.Hovered.Remove(this);
     }
 }

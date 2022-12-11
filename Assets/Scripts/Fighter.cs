@@ -14,7 +14,6 @@ public class Fighter : MonoBehaviour
     [SerializeField] private float _fireDelay;
     [SerializeField] private float _speedMin;
     [SerializeField] private GameObject _missile;
-    [SerializeField] private Selectable _selectable;
     [SerializeField] private SpriteRenderer _afterburner;
 
     public int Team;
@@ -22,6 +21,7 @@ public class Fighter : MonoBehaviour
     public Fighter Target;
 
     private Rigidbody2D _rigidbody;
+    private SelectableNode _selectable;
     private float _turnTime;
     private float _inverseThrust;
     private float _inverseFireSpeed;
@@ -31,9 +31,16 @@ public class Fighter : MonoBehaviour
     private void Awake()
     {
         _rigidbody = GetComponent<Rigidbody2D>();
+        _selectable = GetComponent<SelectableNode>();
+
+        // Precalculations
+        
         _turnTime = 180f / _torque;
         _inverseThrust = 1.0f / _thrustPrimary;
         _inverseFireSpeed = 1.0f / _fireImpulse;
+
+        // Buffers
+        
         _dodgeBuffer = -1.0f;
         _fireBuffer = -1.0f;
     }
