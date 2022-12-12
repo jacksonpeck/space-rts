@@ -9,8 +9,8 @@ public class SelectableNode : MonoBehaviour
     [SerializeField] private Color _colorHover;
     [SerializeField] private Color _colorSelect;
     
-    public Vector2 Destination;
-    public Vector2 Direction;
+    protected Vector2 Destination;
+    protected Vector2 Direction;
 
     public bool isHovered {get; private set;} = false;
     public bool isSelected {get; private set;} = false;
@@ -19,6 +19,12 @@ public class SelectableNode : MonoBehaviour
     {
         Destination = this.transform.position;
         Direction = this.transform.up;
+    }
+
+    public virtual void setDestination(Vector2 destination, Vector2 direction)
+    {
+        Destination = destination;
+        Direction = direction;
     }
 
     public void OnSelect()

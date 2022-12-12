@@ -406,7 +406,6 @@ GameObject:
   m_Component:
   - component: {fileID: 6903732878317413368}
   - component: {fileID: 462384043865934778}
-  - component: {fileID: 5729691236006174465}
   - component: {fileID: 6903732878317413370}
   - component: {fileID: 6903732878317413373}
   - component: {fileID: 6903732878317413372}
@@ -449,6 +448,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 08a80d23cdf29d74c90d81600dc849db, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _selectable: {fileID: 0}
+  _renderer: {fileID: 6903732877859457706}
+  _colorHover: {r: 1, g: 1, b: 1, a: 1}
+  _colorSelect: {r: 0, g: 1, b: 1, a: 1}
+  Destination: {x: 0, y: 0}
+  Direction: {x: 0, y: 0}
   _thrustPrimary: 5
   _thrustSecondary: 2
   _torque: 180
@@ -463,24 +468,6 @@ MonoBehaviour:
   Team: 0
   Velocity: {x: 0, y: 0}
   Target: {fileID: 0}
---- !u!114 &5729691236006174465
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6903732878317413375}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fa4463dae9dbd8848ac71fcd8eb44da8, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _selectable: {fileID: 0}
-  _renderer: {fileID: 6903732877859457706}
-  _colorHover: {r: 1, g: 1, b: 1, a: 1}
-  _colorSelect: {r: 0, g: 1, b: 1, a: 1}
-  Destination: {x: 0, y: 0}
-  Direction: {x: 0, y: 0}
 --- !u!212 &6903732878317413370
 SpriteRenderer:
   m_ObjectHideFlags: 0

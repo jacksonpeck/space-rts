@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Fighter : MonoBehaviour
+public class Fighter : SelectableNode
 {
     [SerializeField] private float _thrustPrimary;
     [SerializeField] private float _thrustSecondary;
@@ -21,7 +21,6 @@ public class Fighter : MonoBehaviour
     public Fighter Target;
 
     private Rigidbody2D _rigidbody;
-    private SelectableNode _selectable;
     private float _turnTime;
     private float _inverseThrust;
     private float _inverseFireSpeed;
@@ -31,16 +30,11 @@ public class Fighter : MonoBehaviour
     private void Awake()
     {
         _rigidbody = GetComponent<Rigidbody2D>();
-        _selectable = GetComponent<SelectableNode>();
-
-        // Precalculations
         
         _turnTime = 180f / _torque;
         _inverseThrust = 1.0f / _thrustPrimary;
         _inverseFireSpeed = 1.0f / _fireImpulse;
 
-        // Buffers
-        
         _dodgeBuffer = -1.0f;
         _fireBuffer = -1.0f;
     }
@@ -69,7 +63,7 @@ public class Fighter : MonoBehaviour
         }
         else
         {
-            difference = _selectable.Destination - _rigidbody.position;
+            difference = Destination - _rigidbody.position;
             relativeVelocity = Velocity;
         }
         
@@ -100,7 +94,7 @@ public class Fighter : MonoBehaviour
         else if (onTarget)
         {
             Velocity = Vector2.MoveTowards(Velocity, Vector2.zero, Time.deltaTime * _thrustSecondary);
-            direction = _selectable.Direction.normalized;
+            direction = Direction.normalized;
         }
         else
         {
