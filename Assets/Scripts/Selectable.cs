@@ -4,21 +4,28 @@ using UnityEngine;
 
 public class Selectable : MonoBehaviour
 {
-    public List<SelectableNode> Nodes;
+    public Selectable Root;
+    public bool isRoot;
+    public List<Selectable> Nodes = new List<Selectable>();
 
     [SerializeField] private SpriteRenderer _renderer;
     [SerializeField] private Color _colorHover;
     [SerializeField] private Color _colorSelect;
-    
-    protected Vector2 Destination;
-    protected Vector2 Direction;
+
+    public Vector2 Destination;
+    public Vector2 Direction;
 
     public bool isHovered {get; private set;} = false;
     public bool isSelected {get; private set;} = false;
 
-    private void Awake()
+    private void Start()
     {
-        setDestination(this.transform.position, this.transform.up);
+        if (Root == null)
+        {
+            Root = this;
+            isRoot = true;
+        }
+        setDestination(Root.transform.position, Root.transform.up);
     }
 
     public virtual void setDestination(Vector2 destination, Vector2 direction)
@@ -32,10 +39,11 @@ public class Selectable : MonoBehaviour
         isSelected = true;
         _renderer.enabled = true;
         _renderer.color = _colorSelect;
+
         if (Nodes.Count != 0)
         {
             KillDeadNodes();
-            foreach (SelectableNode node in Nodes)
+            foreach (Selectable node in Nodes)
             {
                 node.OnSelect();
             }
@@ -56,7 +64,7 @@ public class Selectable : MonoBehaviour
         if (Nodes.Count != 0)
         {
             KillDeadNodes();
-            foreach (SelectableNode node in Nodes)
+            foreach (Selectable node in Nodes)
             {
                 node.OnDeselect();
             }
@@ -69,10 +77,11 @@ public class Selectable : MonoBehaviour
         isHovered = true;
         _renderer.enabled = true;
         _renderer.color = _colorHover;
+        
         if (Nodes.Count != 0)
         {
             KillDeadNodes();
-            foreach (SelectableNode node in Nodes)
+            foreach (Selectable node in Nodes)
             {
                 node.OnHover();
             }
@@ -93,7 +102,7 @@ public class Selectable : MonoBehaviour
         if (Nodes.Count != 0)
         {
             KillDeadNodes();
-            foreach (SelectableNode node in Nodes)
+            foreach (Selectable node in Nodes)
             {
                 node.OnUnhover();
             }
@@ -104,22 +113,22 @@ public class Selectable : MonoBehaviour
     {
         if (other.tag == "SelectionBox")
         {
-            SelectionManager.Instance.Hover(this);
+            SelectionManager.Instance.Hover(Root);
         }
     }
     private void OnTriggerExit2D(Collider2D other)
     {
         if (other.tag == "SelectionBox")
         {
-            SelectionManager.Instance.Unhover(this);
+            SelectionManager.Instance.Unhover(Root);
         }
     }
 
     public void KillDeadNodes()
     {
-        List<SelectableNode> deadNodes = new List<SelectableNode>();
+        List<Selectable> deadNodes = new List<Selectable>();
 
-        foreach (SelectableNode node in Nodes)
+        foreach (Selectable node in Nodes)
         {
             if (node == null)
             {
@@ -127,7 +136,7 @@ public class Selectable : MonoBehaviour
             }
         }
 
-        foreach (SelectableNode node in deadNodes)
+        foreach (Selectable node in deadNodes)
         {
             Nodes.Remove(node);
         }
@@ -135,6 +144,8 @@ public class Selectable : MonoBehaviour
 
     private void OnDisable()
     {
+        if (!isRoot) return;
+
         if (isSelected) SelectionManager.Instance.Selected.Remove(this);
         if (isHovered) SelectionManager.Instance.Hovered.Remove(this);
     }

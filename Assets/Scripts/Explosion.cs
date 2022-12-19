@@ -6,6 +6,7 @@ public class Explosion : MonoBehaviour
 {
     public float AlphaDissipation;
     public float ExpansionRate;
+    public Vector2 Velocity;
 
     private SpriteRenderer _render;
 
@@ -28,5 +29,7 @@ public class Explosion : MonoBehaviour
 
         float size = (transform.localScale.x + Time.deltaTime * ExpansionRate);
         this.transform.localScale = size * Vector3.one;
+
+        this.transform.position += Time.deltaTime * (Vector3)Velocity;
     }
 }

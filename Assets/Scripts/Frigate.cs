@@ -2,20 +2,18 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Fighter: Ship
+public class Frigate : Ship
 {
     [SerializeField] private float _thrustPrimary;
     [SerializeField] private float _thrustSecondary;
     [SerializeField] private float _torque;
-    [SerializeField] private float _dodgeImpulse;
-    [SerializeField] private float _dodgeRate;
-    [SerializeField] private float _dodgeDelay;
     [SerializeField] private float _fireImpulse;
     [SerializeField] private float _fireDelay;
     [SerializeField] private float _speedMin;
     [SerializeField] private GameObject _missile;
-    [SerializeField] private SpriteRenderer _afterburner;
+    [SerializeField] private GameObject _afterburner;
     [SerializeField] private Scanner _scanner;
+    [SerializeField] private List<Turret> _turrets = new List<Turret>();
 
     public Ship Target;
 
@@ -24,7 +22,6 @@ public class Fighter: Ship
     private float _inverseThrustPrimary;
     private float _inverseThrustSecondary;
     private float _inverseFireSpeed;
-    private float _dodgeBuffer;
     private float _fireBuffer;
 
     private void Awake()
@@ -32,72 +29,74 @@ public class Fighter: Ship
         _rigidbody = GetComponent<Rigidbody2D>();
         
         _turnTime = 180f / _torque;
-        _inverseThrustPrimary = 1.0f / _thrustPrimary;
+        _inverseThrustPrimary = 1.0f / (_thrustPrimary + _thrustSecondary);
         _inverseThrustSecondary = 1.0f / _thrustSecondary;
         _inverseFireSpeed = 1.0f / _fireImpulse;
 
-        _dodgeBuffer = -1.0f;
         _fireBuffer = -1.0f;
+
+        foreach (Turret turret in _turrets)
+        {
+            turret.Team = Team;
+        }
     }
 
     private void FixedUpdate()
     {
         if (0.0f <= _fireBuffer) _fireBuffer -= Time.deltaTime;
-        if (0.0f <= _dodgeBuffer) _dodgeBuffer -= Time.deltaTime;
 
-        if (_scanner.Enemies.Count > 0)
-        {
-            Target = _scanner.Enemies[0];
-        }
-
-        bool attack = Target != null;
+        bool attack = _scanner.Enemies.Count > 0;
 
         Vector2 difference;
         Vector2 relativeVelocity;
 
         if (attack)
         {
-            if (_dodgeBuffer < 0.0f && Random.value < _dodgeRate * Time.deltaTime)
+            // Target = _scanner.Enemies[0];
+
+            int index = 1;
+            foreach (Turret turret in _turrets)
             {
-                _dodgeBuffer = _dodgeDelay;
-                Velocity += (Vector2)(Quaternion.Euler(0.0f, 0.0f, Random.Range(0.0f, 360.0f)) * (_dodgeImpulse * Vector2.up));
+                turret.Target = _scanner.Enemies[index++ % _scanner.Enemies.Count];
+                turret.Velocity = Velocity;
             }
 
-            difference = (Vector2)Target.transform.position - _rigidbody.position;
-            relativeVelocity = Velocity - Target.Velocity;
+            // difference = (Vector2)Target.transform.position - _rigidbody.position;
+            // relativeVelocity = Velocity - Target.Velocity;
         }
-        else
-        {
+        // else
+        // {
             difference = Destination - _rigidbody.position;
             relativeVelocity = Velocity;
-        }
+        // }
         
         float distance = difference.magnitude;
         float speed = Velocity.magnitude;
 
         bool moving = speed > _speedMin;
-        bool nearTarget = distance < 2f;
+        bool nearTarget = distance < 5f;
         bool onTarget = distance < 0.5f;
 
         Vector2 direction;
 
-        if (attack)
-        {
-            direction = (difference - (distance * _inverseFireSpeed * relativeVelocity)).normalized;
+        // if (attack)
+        // {
+        //     direction = (difference - (distance * _inverseFireSpeed * relativeVelocity)).normalized;
 
-            float divisor = Vector2.Dot(relativeVelocity, direction) + _fireImpulse;
+        //     float divisor = Vector2.Dot(relativeVelocity, direction) + _fireImpulse;
 
-            if (divisor < 0.0f)
-            {
-                direction = -relativeVelocity;
-            }
-            else
-            {
-                float time = distance / divisor;
-                direction = (difference - time * relativeVelocity).normalized;
-            }
-        }
-        else if (onTarget)
+        //     if (divisor < 0.0f)
+        //     {
+        //         direction = -relativeVelocity;
+        //     }
+        //     else
+        //     {
+        //         float time = distance / divisor;
+        //         direction = (difference - time * relativeVelocity).normalized;
+        //     }
+        // }
+        // else 
+        if (onTarget)
         {
             Velocity = Vector2.MoveTowards(Velocity, Vector2.zero, Time.deltaTime * _thrustSecondary);
             direction = Direction.normalized;
@@ -110,7 +109,7 @@ public class Fighter: Ship
             Vector2 stopDifference = difference - stopPosition;
             direction = stopDifference.normalized;
 
-            if (nearTarget || stopDifference.magnitude < 0.5f)
+            if (stopDifference.magnitude < 0.5f)
             {
                 Velocity += Time.deltaTime * _thrustSecondary * direction;
                 direction = Direction.normalized;
@@ -118,21 +117,20 @@ public class Fighter: Ship
             }
             else
             {
-                // Velocity += Time.deltaTime * _thrustSecondary * direction;
+                Velocity += Time.deltaTime * _thrustSecondary * direction;
             }
         }
         // else if (nearTarget)
         // {
         //     direction = Direction.normalized;
-        //     float stopDistance = speed * (speed * _inverseThrustSecondary + 0.5f);
+        //     float stopDistance = speed * (speed * _inverseThrustSecondary * 0.5f);
         //     Vector2 stopPosition = stopDistance * relativeVelocity.normalized;
         //     Vector2 stopDifference = difference - stopPosition;
         //     Velocity += Time.deltaTime * _thrustSecondary * stopDifference.normalized;
         // }
         // else
         // {
-        //     float stopDistance = speed * (_turnTime + speed * _inverseThrustPrimary + 0.5f);
-        //     // float stopDistance = speed * (speed * _inverseThrustSecondary + 0.5f);
+        //     float stopDistance = speed * (_turnTime + speed * _inverseThrustPrimary * 0.5f);
         //     Vector2 stopPosition = stopDistance * relativeVelocity.normalized;
         //     Vector2 stopDifference = difference - stopPosition;
         //     direction = stopDifference.normalized;
@@ -152,24 +150,25 @@ public class Fighter: Ship
             _rigidbody.MoveRotation(_rigidbody.rotation + rotation);
         }
 
-        if (lookTarget && (attack || !nearTarget))
+        // if (lookTarget && (attack || !nearTarget))
+        if (lookTarget && !nearTarget)
         {
             Velocity += Time.deltaTime * _thrustPrimary * (Vector2)this.transform.up;
-            _afterburner.enabled = true;
+            _afterburner.SetActive(true);
 
-            if (attack && _fireBuffer < 0.0f)
-            {
-                _fireBuffer = _fireDelay;
-                GameObject missile = Instantiate(_missile, this.transform.position, this.transform.rotation);
-                Missile component = missile.GetComponent<Missile>();
-                component.Team = Team;
-                component.Velocity = Velocity + _fireImpulse * (Vector2)missile.transform.up;
-                Destroy(missile, 5.0f);
-            }
+        //     if (attack && _fireBuffer < 0.0f)
+        //     {
+        //         _fireBuffer = _fireDelay;
+        //         GameObject missile = Instantiate(_missile, this.transform.position, this.transform.rotation);
+        //         Missile component = missile.GetComponent<Missile>();
+        //         component.Team = Team;
+        //         component.Velocity = Velocity + _fireImpulse * (Vector2)missile.transform.up;
+        //         Destroy(missile, 5.0f);
+        //     }
         }
         else
         {
-            _afterburner.enabled = false;
+            _afterburner.SetActive(false);
         }
 
         _rigidbody.MovePosition(_rigidbody.position + Time.deltaTime * Velocity);

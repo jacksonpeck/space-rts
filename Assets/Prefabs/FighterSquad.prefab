@@ -134,6 +134,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0e8dd5a2fce15cc4a84f722646e6fbf1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  Root: {fileID: 0}
   Nodes:
   - {fileID: 6187413882671978009}
   - {fileID: 8244515573259631002}
@@ -143,6 +144,9 @@ MonoBehaviour:
   _renderer: {fileID: 7481816647063545367}
   _colorHover: {r: 1, g: 1, b: 1, a: 0}
   _colorSelect: {r: 0, g: 1, b: 1, a: 0}
+  Destination: {x: 0, y: 0}
+  Direction: {x: 0, y: 0}
+  isRoot: 0
 --- !u!1001 &788751126080018912
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -151,7 +155,19 @@ PrefabInstance:
     m_TransformParent: {fileID: 6031634857935472662}
     m_Modifications:
     - target: {fileID: 462384043865934778, guid: f6592e9dc0f7eb54b9e8743d4238cc18, type: 3}
+      propertyPath: Root
+      value: 
+      objectReference: {fileID: 2980904104524060384}
+    - target: {fileID: 462384043865934778, guid: f6592e9dc0f7eb54b9e8743d4238cc18, type: 3}
       propertyPath: _selectable
+      value: 
+      objectReference: {fileID: 2980904104524060384}
+    - target: {fileID: 3984820994155631713, guid: f6592e9dc0f7eb54b9e8743d4238cc18, type: 3}
+      propertyPath: _selectable
+      value: 
+      objectReference: {fileID: 2980904104524060384}
+    - target: {fileID: 4658787432371009835, guid: f6592e9dc0f7eb54b9e8743d4238cc18, type: 3}
+      propertyPath: Root
       value: 
       objectReference: {fileID: 2980904104524060384}
     - target: {fileID: 5729691236006174465, guid: f6592e9dc0f7eb54b9e8743d4238cc18, type: 3}
@@ -232,7 +248,19 @@ PrefabInstance:
     m_TransformParent: {fileID: 6031634857935472662}
     m_Modifications:
     - target: {fileID: 462384043865934778, guid: f6592e9dc0f7eb54b9e8743d4238cc18, type: 3}
+      propertyPath: Root
+      value: 
+      objectReference: {fileID: 2980904104524060384}
+    - target: {fileID: 462384043865934778, guid: f6592e9dc0f7eb54b9e8743d4238cc18, type: 3}
       propertyPath: _selectable
+      value: 
+      objectReference: {fileID: 2980904104524060384}
+    - target: {fileID: 3984820994155631713, guid: f6592e9dc0f7eb54b9e8743d4238cc18, type: 3}
+      propertyPath: _selectable
+      value: 
+      objectReference: {fileID: 2980904104524060384}
+    - target: {fileID: 4658787432371009835, guid: f6592e9dc0f7eb54b9e8743d4238cc18, type: 3}
+      propertyPath: Root
       value: 
       objectReference: {fileID: 2980904104524060384}
     - target: {fileID: 5729691236006174465, guid: f6592e9dc0f7eb54b9e8743d4238cc18, type: 3}
@@ -313,7 +341,19 @@ PrefabInstance:
     m_TransformParent: {fileID: 6031634857935472662}
     m_Modifications:
     - target: {fileID: 462384043865934778, guid: f6592e9dc0f7eb54b9e8743d4238cc18, type: 3}
+      propertyPath: Root
+      value: 
+      objectReference: {fileID: 2980904104524060384}
+    - target: {fileID: 462384043865934778, guid: f6592e9dc0f7eb54b9e8743d4238cc18, type: 3}
       propertyPath: _selectable
+      value: 
+      objectReference: {fileID: 2980904104524060384}
+    - target: {fileID: 3984820994155631713, guid: f6592e9dc0f7eb54b9e8743d4238cc18, type: 3}
+      propertyPath: _selectable
+      value: 
+      objectReference: {fileID: 2980904104524060384}
+    - target: {fileID: 4658787432371009835, guid: f6592e9dc0f7eb54b9e8743d4238cc18, type: 3}
+      propertyPath: Root
       value: 
       objectReference: {fileID: 2980904104524060384}
     - target: {fileID: 5729691236006174465, guid: f6592e9dc0f7eb54b9e8743d4238cc18, type: 3}
@@ -394,7 +434,19 @@ PrefabInstance:
     m_TransformParent: {fileID: 6031634857935472662}
     m_Modifications:
     - target: {fileID: 462384043865934778, guid: f6592e9dc0f7eb54b9e8743d4238cc18, type: 3}
+      propertyPath: Root
+      value: 
+      objectReference: {fileID: 2980904104524060384}
+    - target: {fileID: 462384043865934778, guid: f6592e9dc0f7eb54b9e8743d4238cc18, type: 3}
       propertyPath: _selectable
+      value: 
+      objectReference: {fileID: 2980904104524060384}
+    - target: {fileID: 3984820994155631713, guid: f6592e9dc0f7eb54b9e8743d4238cc18, type: 3}
+      propertyPath: _selectable
+      value: 
+      objectReference: {fileID: 2980904104524060384}
+    - target: {fileID: 4658787432371009835, guid: f6592e9dc0f7eb54b9e8743d4238cc18, type: 3}
+      propertyPath: Root
       value: 
       objectReference: {fileID: 2980904104524060384}
     - target: {fileID: 5729691236006174465, guid: f6592e9dc0f7eb54b9e8743d4238cc18, type: 3}
@@ -407,7 +459,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6903732878317413368, guid: f6592e9dc0f7eb54b9e8743d4238cc18, type: 3}
       propertyPath: m_LocalScale.x
-      value: 0.75
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6903732878317413368, guid: f6592e9dc0f7eb54b9e8743d4238cc18, type: 3}
       propertyPath: m_LocalPosition.x
@@ -479,7 +531,19 @@ PrefabInstance:
     m_TransformParent: {fileID: 6031634857935472662}
     m_Modifications:
     - target: {fileID: 462384043865934778, guid: f6592e9dc0f7eb54b9e8743d4238cc18, type: 3}
+      propertyPath: Root
+      value: 
+      objectReference: {fileID: 2980904104524060384}
+    - target: {fileID: 462384043865934778, guid: f6592e9dc0f7eb54b9e8743d4238cc18, type: 3}
       propertyPath: _selectable
+      value: 
+      objectReference: {fileID: 2980904104524060384}
+    - target: {fileID: 3984820994155631713, guid: f6592e9dc0f7eb54b9e8743d4238cc18, type: 3}
+      propertyPath: _selectable
+      value: 
+      objectReference: {fileID: 2980904104524060384}
+    - target: {fileID: 4658787432371009835, guid: f6592e9dc0f7eb54b9e8743d4238cc18, type: 3}
+      propertyPath: Root
       value: 
       objectReference: {fileID: 2980904104524060384}
     - target: {fileID: 5729691236006174465, guid: f6592e9dc0f7eb54b9e8743d4238cc18, type: 3}

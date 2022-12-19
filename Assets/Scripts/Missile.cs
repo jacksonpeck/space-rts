@@ -5,6 +5,7 @@ using UnityEngine;
 public class Missile : MonoBehaviour
 {
     public int Team;
+    public int Damage;
     public float Thrust;
     public Vector2 Velocity;
 
@@ -19,26 +20,21 @@ public class Missile : MonoBehaviour
 
     private void FixedUpdate()
     {
-        // Velocity += Time.deltaTime * Thrust * (Vector2)this.transform.up;
+        Velocity += Time.deltaTime * Thrust * (Vector2)this.transform.up;
         _rigidbody.MovePosition(_rigidbody.position + Time.deltaTime * Velocity);
     }
 
     private void OnTriggerEnter2D(Collider2D other)
     {
-        if (other.tag == "Fighter" && other.GetComponent<Fighter>().Team != Team)
+        Ship ship = other.GetComponent<Ship>();
+
+        if (ship != null && ship.Team != this.Team)
         {
-            Instantiate(_explosionPrefab, this.transform.position, Quaternion.identity);
+            ship.Damage(Damage);
+            
+            GameObject explosion = Instantiate(_explosionPrefab, this.transform.position, Quaternion.identity);
+            explosion.GetComponent<Explosion>().Velocity = ship.Velocity;
 
-            Destroy(other.gameObject);
-            Destroy(this.gameObject);
-
-            return;
-        }
-        if (other.tag == "Projectile" && other.GetComponent<Missile>().Team != Team)
-        {
-            Instantiate(_explosionPrefab, this.transform.position, Quaternion.identity);
-
-            Destroy(other.gameObject);
             Destroy(this.gameObject);
         }
     }

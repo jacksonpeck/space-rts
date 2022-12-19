@@ -4,47 +4,48 @@ using UnityEngine;
 
 public class Scanner : MonoBehaviour
 {
-    [SerializeField] private Fighter _ship;
+    [SerializeField] private Ship _ship;
 
-    private List<Fighter> _enemies = new List<Fighter>();
+    public List<Ship> Enemies = new List<Ship>();
     
-    private void FixedUpdate()
-    {
-        if (_ship.Target == null && _enemies.Count > 0)
-        {
-            List<Fighter> toRemove = new List<Fighter>();
-            foreach (Fighter f in _enemies)
-            {
-                if (f == null)
-                {
-                    toRemove.Add(f);
-                }
-            }
-            foreach (Fighter f in toRemove)
-            {
-                _enemies.Remove(f);
-            }
-            if (_enemies.Count > 0)
-            {
-                _ship.Target = _enemies[0];
-            }
-        }
-    }
+    // private void FixedUpdate()
+    // {
+    //     if (_ship.Target == null && _enemies.Count > 0)
+    //     {
+    //         List<Fighter> toRemove = new List<Fighter>();
+    //         foreach (Fighter f in _enemies)
+    //         {
+    //             if (f == null)
+    //             {
+    //                 toRemove.Add(f);
+    //             }
+    //         }
+    //         foreach (Fighter f in toRemove)
+    //         {
+    //             _enemies.Remove(f);
+    //         }
+    //         if (_enemies.Count > 0)
+    //         {
+    //             _ship.Target = _enemies[0];
+    //         }
+    //     }
+    // }
 
     private void OnTriggerEnter2D(Collider2D other)
     {
-        if (other.tag == "Fighter" && other.GetComponent<Fighter>().Team != _ship.Team)
+        Ship enemy = other.GetComponent<Ship>();
+        if (enemy != null && enemy.Team != _ship.Team)
         {
-            _enemies.Add(other.GetComponent<Fighter>());
+            Enemies.Add(other.GetComponent<Ship>());
         }
     }
 
     private void OnTriggerExit2D(Collider2D other)
     {
-        if (other.tag == "Fighter" && other.GetComponent<Fighter>().Team != _ship.Team)
+        Ship enemy = other.GetComponent<Ship>();
+        if (enemy != null && enemy.Team != _ship.Team)
         {
-            _enemies.Remove(other.GetComponent<Fighter>());
+            Enemies.Remove(other.GetComponent<Ship>());
         }
     }
-
 }
