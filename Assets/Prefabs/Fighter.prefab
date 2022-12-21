@@ -458,7 +458,7 @@ MonoBehaviour:
   Destination: {x: 0, y: 0}
   Direction: {x: 0, y: 0}
   Team: 0
-  Health: 1
+  Health: 2
   Velocity: {x: 0, y: 0}
   _thrustPrimary: 5
   _thrustSecondary: 3
@@ -470,7 +470,7 @@ MonoBehaviour:
   _fireDelay: 2
   _speedMin: 0.1
   _missile: {fileID: 894259231724946795, guid: a6d13b37e92ca3a4d85eb9686f87e666, type: 3}
-  _afterburner: {fileID: 5016541549770784292}
+  _afterburner: {fileID: 1650484868758431916}
   _scanner: {fileID: 1462953858319971409}
   Target: {fileID: 0}
 --- !u!212 &6903732878317413370

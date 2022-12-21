@@ -14,7 +14,7 @@ public class Fighter: Ship
     [SerializeField] private float _fireDelay;
     [SerializeField] private float _speedMin;
     [SerializeField] private GameObject _missile;
-    [SerializeField] private SpriteRenderer _afterburner;
+    [SerializeField] private GameObject _afterburner;
     [SerializeField] private Scanner _scanner;
 
     public Ship Target;
@@ -155,7 +155,7 @@ public class Fighter: Ship
         if (lookTarget && (attack || !nearTarget))
         {
             Velocity += Time.deltaTime * _thrustPrimary * (Vector2)this.transform.up;
-            _afterburner.enabled = true;
+            _afterburner.SetActive(true);
 
             if (attack && _fireBuffer < 0.0f)
             {
@@ -169,7 +169,7 @@ public class Fighter: Ship
         }
         else
         {
-            _afterburner.enabled = false;
+            _afterburner.SetActive(false);
         }
 
         _rigidbody.MovePosition(_rigidbody.position + Time.deltaTime * Velocity);

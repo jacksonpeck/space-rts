@@ -11,6 +11,7 @@ public class Frigate : Ship
     [SerializeField] private float _fireDelay;
     [SerializeField] private float _speedMin;
     [SerializeField] private GameObject _missile;
+    [SerializeField] private GameObject _explosion;
     [SerializeField] private GameObject _afterburner;
     [SerializeField] private Scanner _scanner;
     [SerializeField] private List<Turret> _turrets = new List<Turret>();
@@ -111,14 +112,11 @@ public class Frigate : Ship
 
             if (stopDifference.magnitude < 0.5f)
             {
-                Velocity += Time.deltaTime * _thrustSecondary * direction;
                 direction = Direction.normalized;
                 nearTarget = true;
             }
-            else
-            {
-                Velocity += Time.deltaTime * _thrustSecondary * direction;
-            }
+            
+            Velocity += Time.deltaTime * _thrustSecondary * direction;
         }
         // else if (nearTarget)
         // {
@@ -172,5 +170,15 @@ public class Frigate : Ship
         }
 
         _rigidbody.MovePosition(_rigidbody.position + Time.deltaTime * Velocity);
+    }
+
+    public override void Kill()
+    {
+        Explosion explosion = Instantiate(_explosion, this.transform.position, Quaternion.identity).GetComponent<Explosion>();
+        explosion.Velocity = Velocity;
+        explosion.AlphaDissipation = 0.3f;
+        explosion.ExpansionRate = 5f;
+
+        base.Kill();
     }
 }

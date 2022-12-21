@@ -35,12 +35,27 @@ public class Turret : MonoBehaviour
         {
             Vector2 difference = (Vector2)Target.transform.position - (Vector2)this.transform.position;
             Vector2 relativeVelocity = Velocity - Target.Velocity;
+
             float distance = difference.magnitude;
+
             direction = (difference - (distance * _inverseFireSpeed * relativeVelocity)).normalized;
+
+            float divisor = Vector2.Dot(relativeVelocity, direction) + _fireImpulse;
+            // Add thrust here  + _projectilePrefab.Thrust
+
+            if (divisor < 0.0f)
+            {
+                direction = -relativeVelocity;
+            }
+            else
+            {
+                float time = distance / divisor;
+                direction = (difference - time * relativeVelocity).normalized;
+            }
         }
         else
         {
-            direction = Vector3.up;
+            direction = this.transform.up;
         }
 
         float rotation = Time.deltaTime * _torque;
@@ -48,21 +63,38 @@ public class Turret : MonoBehaviour
 
         bool lookTarget = angle < rotation;
 
-        if (!lookTarget)
-        {
+        // if (!lookTarget)
+        // {
             if (0f < Vector2.Dot(this.transform.right, direction))
                 rotation *= -1f;
 
-            this.transform.Rotate(Vector3.forward, rotation);
-        }
+            if (angle > 0.0f)
+                this.transform.Rotate(Vector3.forward, rotation);
+                // this.transform.rotation *= Quaternion.RotateTowards(this.transform.rotation, Quaternion.FromToRotation(Vector2.up, direction), rotation);
+        // }
 
         if (attack && lookTarget)
         {
             if (attack && _fireBuffer < 0.0f)
             {
                 _fireBuffer = _fireDelay;
-                GameObject projectile = Instantiate(_projectilePrefab, this.transform.position, this.transform.rotation);
+
+                GameObject projectile = Instantiate(
+                    _projectilePrefab, 
+                    this.transform.position - 0.25f * this.transform.right, 
+                    this.transform.rotation
+                );
                 Missile component = projectile.GetComponent<Missile>();
+                component.Team = Team;
+                component.Velocity = Velocity + _fireImpulse * (Vector2)projectile.transform.up;
+                Destroy(projectile, 5.0f);
+                
+                projectile = Instantiate(
+                    _projectilePrefab, 
+                    this.transform.position + 0.25f * this.transform.right, 
+                    this.transform.rotation
+                );
+                component = projectile.GetComponent<Missile>();
                 component.Team = Team;
                 component.Velocity = Velocity + _fireImpulse * (Vector2)projectile.transform.up;
                 Destroy(projectile, 5.0f);

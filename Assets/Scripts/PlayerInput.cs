@@ -21,6 +21,7 @@ public class PlayerInput : MonoBehaviour
     private bool _dragRight = false;
     private bool _clickMiddle = false;
     private bool _dragMiddle = false;
+    private bool _ctrlHold = false;
     private Vector2 _cursorPosition;
     private Vector2 _clickLeftOrigin;
     private Vector2 _clickRightOrigin;
@@ -84,7 +85,10 @@ public class PlayerInput : MonoBehaviour
     private void MouseLeftUp(InputAction.CallbackContext context)
     {
         _clickLeft = false;
-        SelectionManager.Instance.DeselectAll();
+
+        if (!_ctrlHold)
+            SelectionManager.Instance.DeselectAll();
+
         if (_dragLeft)
         {
             _dragLeft = false;
@@ -125,9 +129,31 @@ public class PlayerInput : MonoBehaviour
 
     private void CtrlDown(InputAction.CallbackContext context)
     {
+        _ctrlHold = true;
+        Debug.Log("ctrl down");
+        // foreach(Selectable selected in SelectionManager.Instance.Selected)
+        // {
+        //     SelectionManager.Instance.Hover(selected);
+        // }
     }
     private void CtrlUp(InputAction.CallbackContext context)
     {
+        _ctrlHold = false;
+        Debug.Log("ctrl up");
+        // if (_clickLeft)
+        // {
+        //     foreach(Selectable selected in SelectionManager.Instance.Selected)
+        //     {
+        //         SelectionManager.Instance.Deselect(selected);
+        //     }
+        // }
+        // else
+        // {
+        //     foreach(Selectable selected in SelectionManager.Instance.Selected)
+        //     {
+        //         SelectionManager.Instance.Unhover(selected);
+        //     }
+        // }
     }
 
     private void OnEnable()
@@ -137,6 +163,8 @@ public class PlayerInput : MonoBehaviour
         _controls.player.clickLeft.canceled += MouseLeftUp;
         _controls.player.clickRight.started += MouseRightDown;
         _controls.player.clickRight.canceled += MouseRightUp;
+        _controls.player.ctrl.started += CtrlDown;
+        _controls.player.ctrl.canceled += CtrlUp;
     }
     private void OnDisable()
     {
@@ -145,5 +173,7 @@ public class PlayerInput : MonoBehaviour
         _controls.player.clickLeft.canceled -= MouseLeftUp;
         _controls.player.clickRight.started -= MouseRightDown;
         _controls.player.clickRight.canceled -= MouseRightUp;
+        _controls.player.ctrl.started -= CtrlDown;
+        _controls.player.ctrl.canceled -= CtrlUp;
     }
 }
