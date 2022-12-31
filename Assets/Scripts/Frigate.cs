@@ -67,7 +67,7 @@ public class Frigate : Ship
         }
         // else
         // {
-            difference = Destination - _rigidbody.position;
+            difference = CurrentTask.destination - _rigidbody.position;
             relativeVelocity = Velocity;
         // }
         
@@ -96,11 +96,11 @@ public class Frigate : Ship
         //         direction = (difference - time * relativeVelocity).normalized;
         //     }
         // }
-        // else 
+        // else
         if (onTarget)
         {
             Velocity = Vector2.MoveTowards(Velocity, Vector2.zero, Time.deltaTime * _thrustSecondary);
-            direction = Direction.normalized;
+            direction = CurrentTask.direction.normalized;
             nearTarget = true;
         }
         else
@@ -112,11 +112,15 @@ public class Frigate : Ship
 
             if (stopDifference.magnitude < 0.5f)
             {
-                direction = Direction.normalized;
+                Velocity += Time.deltaTime * _thrustSecondary * direction;
+                direction = CurrentTask.direction.normalized;
                 nearTarget = true;
             }
+            else
+            {
+                Velocity += Time.deltaTime * _thrustSecondary * direction;
+            }
             
-            Velocity += Time.deltaTime * _thrustSecondary * direction;
         }
         // else if (nearTarget)
         // {
@@ -170,6 +174,11 @@ public class Frigate : Ship
         }
 
         _rigidbody.MovePosition(_rigidbody.position + Time.deltaTime * Velocity);
+
+        if (onTarget && lookTarget)
+        {
+            RequestTask();
+        }
     }
 
     public override void Kill()

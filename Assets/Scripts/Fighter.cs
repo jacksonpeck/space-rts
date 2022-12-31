@@ -68,7 +68,7 @@ public class Fighter: Ship
         }
         else
         {
-            difference = Destination - _rigidbody.position;
+            difference = CurrentTask.destination - _rigidbody.position;
             relativeVelocity = Velocity;
         }
         
@@ -100,7 +100,7 @@ public class Fighter: Ship
         else if (onTarget)
         {
             Velocity = Vector2.MoveTowards(Velocity, Vector2.zero, Time.deltaTime * _thrustSecondary);
-            direction = Direction.normalized;
+            direction = CurrentTask.direction.normalized;
             nearTarget = true;
         }
         else
@@ -113,12 +113,12 @@ public class Fighter: Ship
             if (nearTarget || stopDifference.magnitude < 0.5f)
             {
                 Velocity += Time.deltaTime * _thrustSecondary * direction;
-                direction = Direction.normalized;
+                direction = CurrentTask.direction.normalized;
                 nearTarget = true;
             }
             else
             {
-                // Velocity += Time.deltaTime * _thrustSecondary * direction;
+                Velocity += Time.deltaTime * _thrustSecondary * direction;
             }
         }
         // else if (nearTarget)
@@ -173,5 +173,13 @@ public class Fighter: Ship
         }
 
         _rigidbody.MovePosition(_rigidbody.position + Time.deltaTime * Velocity);
+
+        if (onTarget)
+        {
+            if (!RequestTask())
+            {
+                Root.Notify();
+            }
+        }
     }
 }

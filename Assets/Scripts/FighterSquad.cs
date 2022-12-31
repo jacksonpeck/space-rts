@@ -4,54 +4,26 @@ using UnityEngine;
 
 public class FighterSquad : Selectable
 {
-    // private Scanner _scanner;
     private Ship _target;
 
-    public void Awake()
+    public override void StartTask()
     {
-        // _scanner = Nodes[0].GetComponent<Scanner
-    }
-
-    // private void FixedUpdate()
-    // {
-    //     if (_destination == Destination)
-    //     {
-    //         return;
-    //     }
-
-    //     _destination = Destination;
-    //     _direction = Direction;
-
-    //     Formation.Instance.SetDestination(_destination, _direction, Nodes);
-    // }
-    // private void FixedUpdate()
-    // {
-    //     if (Nodes.Count <= 0)
-    //     {
-    //         Destroy(this);
-    //     }
-    //     if (Target == null && )
-    //     {
-            
-    //     }
-    // }
-
-    public override void setDestination(Vector2 destination, Vector2 direction)
-    {
-        base.setDestination(destination, direction);
-
         if (Nodes.Count <= 0) return;
 
-        List<Selectable> units = new List<Selectable>();
-        foreach (Selectable s in Nodes)
+        if (CurrentTask.direction == Vector2.zero)
         {
-            units.Add(s);
+            if (Tasks.Count > 0)
+            {
+                CurrentTask.direction = (Tasks.Peek().destination - CurrentTask.destination).normalized;
+            }
+            else
+            {
+                CurrentTask.direction = (CurrentTask.destination - (Vector2)Nodes[0].transform.position).normalized;
+            }
         }
 
-        if (direction == new Vector2())
-        {
-            direction = (destination - (Vector2)units[0].transform.position).normalized;
-        }
+        Vector2 destination = CurrentTask.destination;
+        Vector2 direction = CurrentTask.direction;
 
         bool left = true;
         Vector2 rowPosition = destination - 2 * direction.normalized;
@@ -59,22 +31,25 @@ public class FighterSquad : Selectable
         Vector2 offset = orthogonal;
         Vector2 directionNormal = direction.normalized;
 
-        units[0].setDestination(destination, directionNormal);
+        Nodes[0].Assign(CurrentTask, true);
+        
+        Task task = CurrentTask;
 
         for (int i = 1; i < Nodes.Count; i++)
         {
-            Selectable unit = units[i];
+            Selectable node = Nodes[i];
             if (left)
             {
-                unit.setDestination(rowPosition + offset, directionNormal);
+                task.destination = rowPosition + offset;
             }
             else
             {
-                unit.setDestination(rowPosition - offset, directionNormal);
+                task.destination = rowPosition - offset;
                 rowPosition -= 2 * direction;
                 offset += orthogonal;
             }
             left = !left;
+            node.Assign(task, true);
         }
     }
 }

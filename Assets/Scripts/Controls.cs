@@ -89,6 +89,24 @@ public partial class @Controls : IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""shift"",
+                    ""type"": ""Button"",
+                    ""id"": ""fba980f5-8c6b-4914-b052-80f59e4eaf2e"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""alt"",
+                    ""type"": ""Button"",
+                    ""id"": ""7c4d3611-b211-4776-a634-a45ae9223622"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -234,6 +252,28 @@ public partial class @Controls : IInputActionCollection2, IDisposable
                     ""action"": ""ctrl"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""3e46d22d-c5ba-442b-87d6-51af48d4cbc2"",
+                    ""path"": ""<Keyboard>/leftShift"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""shift"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""2a75fe03-9a31-4097-bf5b-f12e58ff1ab0"",
+                    ""path"": ""<Keyboard>/leftAlt"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""alt"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -249,6 +289,8 @@ public partial class @Controls : IInputActionCollection2, IDisposable
         m_player_move = m_player.FindAction("move", throwIfNotFound: true);
         m_player_zoom = m_player.FindAction("zoom", throwIfNotFound: true);
         m_player_ctrl = m_player.FindAction("ctrl", throwIfNotFound: true);
+        m_player_shift = m_player.FindAction("shift", throwIfNotFound: true);
+        m_player_alt = m_player.FindAction("alt", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -315,6 +357,8 @@ public partial class @Controls : IInputActionCollection2, IDisposable
     private readonly InputAction m_player_move;
     private readonly InputAction m_player_zoom;
     private readonly InputAction m_player_ctrl;
+    private readonly InputAction m_player_shift;
+    private readonly InputAction m_player_alt;
     public struct PlayerActions
     {
         private @Controls m_Wrapper;
@@ -326,6 +370,8 @@ public partial class @Controls : IInputActionCollection2, IDisposable
         public InputAction @move => m_Wrapper.m_player_move;
         public InputAction @zoom => m_Wrapper.m_player_zoom;
         public InputAction @ctrl => m_Wrapper.m_player_ctrl;
+        public InputAction @shift => m_Wrapper.m_player_shift;
+        public InputAction @alt => m_Wrapper.m_player_alt;
         public InputActionMap Get() { return m_Wrapper.m_player; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -356,6 +402,12 @@ public partial class @Controls : IInputActionCollection2, IDisposable
                 @ctrl.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnCtrl;
                 @ctrl.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnCtrl;
                 @ctrl.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnCtrl;
+                @shift.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnShift;
+                @shift.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnShift;
+                @shift.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnShift;
+                @alt.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnAlt;
+                @alt.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnAlt;
+                @alt.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnAlt;
             }
             m_Wrapper.m_PlayerActionsCallbackInterface = instance;
             if (instance != null)
@@ -381,6 +433,12 @@ public partial class @Controls : IInputActionCollection2, IDisposable
                 @ctrl.started += instance.OnCtrl;
                 @ctrl.performed += instance.OnCtrl;
                 @ctrl.canceled += instance.OnCtrl;
+                @shift.started += instance.OnShift;
+                @shift.performed += instance.OnShift;
+                @shift.canceled += instance.OnShift;
+                @alt.started += instance.OnAlt;
+                @alt.performed += instance.OnAlt;
+                @alt.canceled += instance.OnAlt;
             }
         }
     }
@@ -394,5 +452,7 @@ public partial class @Controls : IInputActionCollection2, IDisposable
         void OnMove(InputAction.CallbackContext context);
         void OnZoom(InputAction.CallbackContext context);
         void OnCtrl(InputAction.CallbackContext context);
+        void OnShift(InputAction.CallbackContext context);
+        void OnAlt(InputAction.CallbackContext context);
     }
 }

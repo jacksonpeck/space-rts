@@ -9,6 +9,7 @@ public class PlayerInput : MonoBehaviour
     [SerializeField] private float _cameraZoomSpeed;
     [SerializeField] private float _cameraZoomMin;
     [SerializeField] private float _cameraZoomMax;
+    [SerializeField] private Vector3 _focusDifference;
     [SerializeField] private GameObject _selectionBoxPrefab;
 
     private Controls _controls;
@@ -22,6 +23,8 @@ public class PlayerInput : MonoBehaviour
     private bool _clickMiddle = false;
     private bool _dragMiddle = false;
     private bool _ctrlHold = false;
+    private bool _shiftHold = false;
+    private bool _altHold = false;
     private Vector2 _cursorPosition;
     private Vector2 _clickLeftOrigin;
     private Vector2 _clickRightOrigin;
@@ -35,7 +38,6 @@ public class PlayerInput : MonoBehaviour
         _camera = GetComponent<Camera>();
         _selectionBox = Instantiate(_selectionBoxPrefab);
         _selectionBoxRenderer = _selectionBox.GetComponent<SpriteRenderer>();
-        // _selection_box.SetActive(false);
         _selectionBoxRenderer.enabled = false;
     }
 
@@ -47,9 +49,21 @@ public class PlayerInput : MonoBehaviour
     }
     private void FixedUpdate()
     {
-        Vector3 cameraPosition = this.transform.position;
-        cameraPosition += (Vector3)(Time.deltaTime * _cameraMoveSpeed * _camera.orthographicSize * _cameraMovement);
-        this.transform.position = cameraPosition;
+        Vector3 cameraPositionDifference = (Vector3)(Time.deltaTime * _cameraMoveSpeed * _camera.orthographicSize * _cameraMovement);
+
+        Selectable focus = SelectionManager.Instance.Focused;
+        if (focus != null)
+        {
+            _focusDifference += cameraPositionDifference;
+            Vector3 focusRelative = focus.transform.position + _focusDifference;
+
+            this.transform.position = new Vector3(focusRelative.x, focusRelative.y, this.transform.position.z);
+        }
+        else
+        {
+            _focusDifference = Vector3.zero;
+            this.transform.position = this.transform.position + cameraPositionDifference;
+        }
 
         _camera.orthographicSize = Mathf.Clamp(_camera.orthographicSize + 
             _camera.orthographicSize * Time.deltaTime * _cameraZoomSpeed * _cameraZoom, 
@@ -76,8 +90,7 @@ public class PlayerInput : MonoBehaviour
     private void MouseLeftDown(InputAction.CallbackContext context)
     {
         _clickLeft = true;
-        _clickLeftOrigin = _cursorPosition;;
-        // _selection_box.SetActive(true);
+        _clickLeftOrigin = _cursorPosition;
         _selectionBoxRenderer.enabled = true;
         _selectionBox.transform.position = _clickLeftOrigin;
         _selectionBox.transform.localScale = new Vector3(0.1f, 0.1f, 1f);
@@ -85,20 +98,29 @@ public class PlayerInput : MonoBehaviour
     private void MouseLeftUp(InputAction.CallbackContext context)
     {
         _clickLeft = false;
-
-        if (!_ctrlHold)
-            SelectionManager.Instance.DeselectAll();
-
         if (_dragLeft)
         {
             _dragLeft = false;
-            SelectionManager.Instance.SelectHovered();
+            if (_ctrlHold)
+            {
+                SelectionManager.Instance.SelectHovered();
+            }
+            else
+            {
+                SelectionManager.Instance.SelectMoreHovered();
+            }
         }
         else
         {
-            SelectionManager.Instance.SelectOne();
+            if (_ctrlHold)
+            {
+                SelectionManager.Instance.SelectAnother();
+            }
+            else
+            {
+                SelectionManager.Instance.SelectOne();
+            }
         }
-        // _selection_box.SetActive(false);
         _selectionBoxRenderer.enabled = false;
         _selectionBox.transform.localScale = new Vector3(0.1f, 0.1f, 1f);
     }
@@ -112,48 +134,53 @@ public class PlayerInput : MonoBehaviour
     {
         _clickRight = false;
         HashSet<Selectable> selected = SelectionManager.Instance.Selected;
-        // foreach (Selectable s in selected)
-        // {
-        //     s.Destination = _cursorPosition;
-        // }
+
+        Task task = new Task();
+        task.target = null;
+
         if (_dragRight)
         {
-            Formation.Instance.SetDestination(_clickRightOrigin, (_cursorPosition - _clickRightOrigin).normalized, selected);
+            // Formation.Instance.SetDestination(_clickRightOrigin, (_cursorPosition - _clickRightOrigin).normalized, selected);
+            task.destination = _clickRightOrigin;
+            task.direction = (_cursorPosition - _clickRightOrigin).normalized;
             _dragRight = false;
         }
         else
         {
-            Formation.Instance.SetDestination(_cursorPosition, new Vector2(), selected);
+            // Formation.Instance.SetDestination(_cursorPosition, new Vector2(), selected);
+            task.destination = _cursorPosition;
+            task.direction = Vector2.zero;
         }
+        task.halt = true;
+        task.repeat = _altHold;
+        SelectionManager.Instance.Assign(task, _shiftHold);
     }
 
     private void CtrlDown(InputAction.CallbackContext context)
     {
         _ctrlHold = true;
-        Debug.Log("ctrl down");
-        // foreach(Selectable selected in SelectionManager.Instance.Selected)
-        // {
-        //     SelectionManager.Instance.Hover(selected);
-        // }
     }
     private void CtrlUp(InputAction.CallbackContext context)
     {
         _ctrlHold = false;
-        Debug.Log("ctrl up");
-        // if (_clickLeft)
-        // {
-        //     foreach(Selectable selected in SelectionManager.Instance.Selected)
-        //     {
-        //         SelectionManager.Instance.Deselect(selected);
-        //     }
-        // }
-        // else
-        // {
-        //     foreach(Selectable selected in SelectionManager.Instance.Selected)
-        //     {
-        //         SelectionManager.Instance.Unhover(selected);
-        //     }
-        // }
+    }
+
+    private void ShiftDown(InputAction.CallbackContext context)
+    {
+        _shiftHold = true;
+    }
+    private void ShiftUp(InputAction.CallbackContext context)
+    {
+        _shiftHold = false;
+    }
+
+    private void AltDown(InputAction.CallbackContext context)
+    {
+        _altHold = true;
+    }
+    private void AltUp(InputAction.CallbackContext context)
+    {
+        _altHold = false;
     }
 
     private void OnEnable()
@@ -165,6 +192,10 @@ public class PlayerInput : MonoBehaviour
         _controls.player.clickRight.canceled += MouseRightUp;
         _controls.player.ctrl.started += CtrlDown;
         _controls.player.ctrl.canceled += CtrlUp;
+        _controls.player.shift.started += ShiftDown;
+        _controls.player.shift.canceled += ShiftUp;
+        _controls.player.alt.started += AltDown;
+        _controls.player.alt.canceled += AltUp;
     }
     private void OnDisable()
     {
@@ -175,5 +206,9 @@ public class PlayerInput : MonoBehaviour
         _controls.player.clickRight.canceled -= MouseRightUp;
         _controls.player.ctrl.started -= CtrlDown;
         _controls.player.ctrl.canceled -= CtrlUp;
+        _controls.player.shift.started -= ShiftDown;
+        _controls.player.shift.canceled -= ShiftUp;
+        _controls.player.alt.started -= AltDown;
+        _controls.player.alt.canceled -= AltUp;
     }
 }

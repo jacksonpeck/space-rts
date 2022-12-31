@@ -21,51 +21,51 @@ public class Formation
         }
     }
 
-    public void SetDestination(Vector2 destination, Vector2 direction, HashSet<Selectable> selected)
-    {
-        if (selected.Count <= 0) return;
+    // public void SetDestination(Vector2 destination, Vector2 direction, HashSet<Selectable> selected)
+    // {
+    //     if (selected.Count <= 0) return;
 
-        List<Selectable> units = new List<Selectable>();
-        foreach (Selectable s in selected)
-        {
-            s.KillDeadNodes();
-            units.Add(s);
-        }
+    //     List<Selectable> units = new List<Selectable>();
+    //     foreach (Selectable s in selected)
+    //     {
+    //         s.KillDeadNodes();
+    //         units.Add(s);
+    //     }
 
-        if (direction == new Vector2())
-        {
-            if (units[0].Nodes.Count == 0)
-            {
-                direction = (destination - (Vector2)units[0].transform.position).normalized;
-            }
-            else
-            {
-                direction = (destination - (Vector2)units[0].Nodes[0].transform.position).normalized;
-            }
-        }
+    //     if (direction == new Vector2())
+    //     {
+    //         if (units[0].Nodes.Count == 0)
+    //         {
+    //             direction = (destination - (Vector2)units[0].transform.position).normalized;
+    //         }
+    //         else
+    //         {
+    //             direction = (destination - (Vector2)units[0].Nodes[0].transform.position).normalized;
+    //         }
+    //     }
 
-        bool left = true;
-        Vector2 orthogonal = 12.0f * (Quaternion.AngleAxis(90f, Vector3.forward) * direction.normalized);
-        Vector2 offset = orthogonal;
-        Vector2 directionNormal = direction.normalized;
+    //     bool left = true;
+    //     Vector2 orthogonal = 12.0f * (Quaternion.AngleAxis(90f, Vector3.forward) * direction.normalized);
+    //     Vector2 offset = orthogonal;
+    //     Vector2 directionNormal = direction.normalized;
 
-        units[0].setDestination(destination, directionNormal);
+    //     units[0].setDestination(destination, directionNormal);
 
-        for (int i = 1; i < selected.Count; i++)
-        {
-            Selectable unit = units[i];
-            if (left)
-            {
-                unit.setDestination(destination + offset, directionNormal);
-            }
-            else
-            {
-                unit.setDestination(destination - offset, directionNormal);
-                offset += orthogonal;
-            }
-            left = !left;
-        }
-    }
+    //     for (int i = 1; i < selected.Count; i++)
+    //     {
+    //         Selectable unit = units[i];
+    //         if (left)
+    //         {
+    //             unit.setDestination(destination + offset, directionNormal);
+    //         }
+    //         else
+    //         {
+    //             unit.setDestination(destination - offset, directionNormal);
+    //             offset += orthogonal;
+    //         }
+    //         left = !left;
+    //     }
+    // }
 
     // public void SetDestination(Vector2 destination, Vector2 direction, HashSet<Selectable> selected)
     // {
